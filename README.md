@@ -1,4 +1,4 @@
-# OpenClaw Supervisor (终极火力升华版)
+# OpenClaw Supervisor (大波威力加强版)
 
 🤖 全网唯一 **拒绝 AI 罢工** 与 **自证清白** 的神仙级外挂“包工头”组件！
 

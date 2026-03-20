@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenClaw Supervisor (Ultimate Firepower Edition) 
+OpenClaw Supervisor (大波威力加强版) 
 - 任务执行监控、资源探头与防线崩溃自起守护。
 
 功能:
@@ -237,7 +237,7 @@ def cmd_watch(args):
     check_rhythm = args.check_interval
     report_rhythm = args.report_interval
     
-    print(f"🚀 OpenClaw Supervisor (Firepower Edition) 进入巡航守护模式 ...")
+    print(f"🚀 OpenClaw Supervisor (大波威力加强版) 进入巡航守护模式 ...")
     print(f"📊 [全局探测引擎]: 每 {check_rhythm} 秒检查进程异常崩溃、资源波峰并执行起死回生拉起")
     print(f"📈 [极客看板汇报]: 每 {report_rhythm} 秒汇总打印一次高视角统筹报表")
     print("-" * 60)
@@ -307,7 +307,7 @@ def cmd_watch(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenClaw Task Supervisor - Ultimate Firepower Edition")
+    parser = argparse.ArgumentParser(description="OpenClaw Task Supervisor - 大波威力加强版")
     sub = parser.add_subparsers(dest='cmd', required=True)
 
     p_start = sub.add_parser('start', help="新建并启动一个目标文件的计时侦测任务")
