@@ -52,6 +52,9 @@ def task_path(task_id: str) -> Path:
 def history_path() -> Path:
     return RUNTIME_DIR / 'history.jsonl'
 
+def alarm_path(task_id: str) -> Path:
+    return RUNTIME_DIR / f'{task_id}.alarm.json'
+
 def load_task(task_id: str) -> dict:
     p = task_path(task_id)
     if not p.exists():
@@ -64,6 +67,15 @@ def save_task(task: dict):
 def append_history(event: dict):
     with history_path().open('a', encoding='utf-8') as f:
         f.write(json.dumps(event, ensure_ascii=False) + '\n')
+
+def write_alarm(task: dict, status: str):
+    alarm = {
+        'task_id': task['task_id'],
+        'status': status,
+        'needs_report': status in ('TIMEOUT_NO_ARTIFACT', 'TIMEOUT_PARTIAL'),
+        'checked_at': iso(now_utc())
+    }
+    alarm_path(task['task_id']).write_text(json.dumps(alarm, ensure_ascii=False, indent=2), encoding='utf-8')
 
 def inspect_files(task: dict):
     created = parse_iso(task['created_at'])
@@ -171,6 +183,8 @@ def process_check(task_id: str) -> dict:
     save_task(task)
     if status != 'PENDING':
         append_history({'event': 'CHECK', 'task_id': task_id, 'status': status, 'checked_at': iso(now)})
+        if status in ('TIMEOUT_NO_ARTIFACT', 'TIMEOUT_PARTIAL'):
+            write_alarm(task, status)
     return task
 
 
@@ -182,7 +196,7 @@ def cmd_check(args):
 def cmd_list(args):
     items = []
     for p in sorted(RUNTIME_DIR.glob('*.json')):
-        if p.name == 'history.jsonl':
+        if p.name == 'history.jsonl' or p.name.endswith('.alarm.json'):
             continue
         try:
             items.append(json.loads(p.read_text(encoding='utf-8')))
@@ -236,13 +250,16 @@ def handle_process_crash_and_resources(task: dict, current_dt):
 def cmd_watch(args):
     check_rhythm = args.check_interval
     report_rhythm = args.report_interval
+    progress_rhythm = args.progress_interval
     
     print(f"🚀 OpenClaw Supervisor (大波威力加强版) 进入巡航守护模式 ...")
     print(f"📊 [全局探测引擎]: 每 {check_rhythm} 秒检查进程异常崩溃、资源波峰并执行起死回生拉起")
     print(f"📈 [极客看板汇报]: 每 {report_rhythm} 秒汇总打印一次高视角统筹报表")
+    print(f"⏱️ [进度定时汇报]: 每 {progress_rhythm} 秒 (默认30分钟) 播报一次进度并留档")
     print("-" * 60)
     
     last_report_time = time.time()
+    last_progress_time = time.time()
     
     while True:
         try:
@@ -253,7 +270,7 @@ def cmd_watch(args):
             
             # 1. 督促与性能探针环节 (Urge & Resurrect)
             for p in RUNTIME_DIR.glob('*.json'):
-                if p.name == 'history.jsonl': continue
+                if p.name == 'history.jsonl' or p.name.endswith('.alarm.json'): continue
                 data = json.loads(p.read_text(encoding='utf-8'))
                 if data.get('status') == 'PENDING':
                     # 更新状态探测
@@ -282,7 +299,7 @@ def cmd_watch(args):
                 all_status = {'SUCCESS': 0, 'PENDING': 0, 'TIMEOUT_NO_ARTIFACT': 0, 'TIMEOUT_PARTIAL': 0, 'CRASHED_FAILED': 0}
                 total_restarts = 0
                 for p in RUNTIME_DIR.glob('*.json'):
-                    if p.name == 'history.jsonl': continue
+                    if p.name == 'history.jsonl' or p.name.endswith('.alarm.json'): continue
                     data = json.loads(p.read_text(encoding='utf-8'))
                     s = data.get('status', 'PENDING')
                     if s in all_status:
@@ -299,6 +316,17 @@ def cmd_watch(args):
                 print("="*50 + "\n")
                 
                 last_report_time = now_ts
+                
+            # 3. 30分钟定时进度汇报 (Progress)
+            if now_ts - last_progress_time >= progress_rhythm:
+                print(f"\n[{format_time(current_dt)}] ⏱️ 【30分钟定时进度汇报】当前所有任务进度已更新。")
+                for p in RUNTIME_DIR.glob('*.json'):
+                    if p.name == 'history.jsonl' or p.name.endswith('.alarm.json'): continue
+                    data = json.loads(p.read_text(encoding='utf-8'))
+                    s = data.get('status', 'PENDING')
+                    if s == 'PENDING':
+                        print(f"   -> 任务 [{data['task_id']}] 仍在执行中，产物暂未生成。")
+                last_progress_time = now_ts
                 
         except Exception as e:
             print(f"[{format_time(now_utc())}] ⚠️ 监控器遇到干扰异常: {e}")
@@ -329,6 +357,7 @@ def main():
     p_watch = sub.add_parser('watch', help="开启防线全备监控引擎在后台执行")
     p_watch.add_argument('--check-interval', type=int, default=10, help="全盘侦测步长/秒 (默认 10)")
     p_watch.add_argument('--report-interval', type=int, default=120, help="输出阶段报告周期/秒 (默认 120)")
+    p_watch.add_argument('--progress-interval', type=int, default=1800, help="定时汇报进度周期/秒 (默认 1800, 即30分钟)")
     p_watch.set_defaults(func=cmd_watch)
 
     args = parser.parse_args()
