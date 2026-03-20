@@ -1,46 +1,69 @@
-# OpenClaw Supervisor
+# OpenClaw Supervisor (终极火力升华版)
 
-`OpenClaw Supervisor` 是一个从原本生硬的检测探针剥离进化而成的**通用化、高度自律的任务执行泛用监控器与督导师**。它不仅可以被任何 Agent (如 OpenClaw)、第三方程序或者后台运算所调用产生进度追踪机制，还能够以特定的节奏为您进行状态的“催办督促”和“全局宏观报备”。
+🤖 全网唯一 **拒绝 AI 罢工** 与 **自证清白** 的神仙级外挂“包工头”组件！
 
-## 🌟 核心特性
+## 为什么你的 OpenClaw 离不开它？
 
-1. **绝对脱敏与灵活泛用**：去除了所有针对单一部署机器的硬编码耦合。工作流会存放于标准化的家目录缓存 `~/.openclaw_supervisor/runtime`，也可通过 `OPENCLAW_SUPERVISOR_HOME` 环境变量跨盘重定向保护。
-2. **生命周期原子记录**：所有的 `start` 和 `check` 都会产生精准到秒以及包含历史 `history.jsonl` 不可篡改动作的完整执行日志，提供完善的事后审计机制。
-3. **多维健康评析体系**：从传统的一刀切改为引入 `TIMEOUT_NO_ARTIFACT` (极度失败停滞) 和 `TIMEOUT_PARTIAL` (超时但存在有效半成品) 等精细化状态标识。
-4. **智能自动化督促与盘点循环 (`Watch` 模式)**：内置自巡航进程，拥有完全可被您自定义掌控的检测心跳 (`Check Rhythm`) 与阶段汇报 (`Report Rhythm`)，为管理大量并发长线程操作赋能。
+家人们！正在折腾 OpenClaw 或是各类自动 Agent 的极客兄弟姐妹们看过来！👋 
+是不是总觉得后台跑着长时间 AI 脚本当甩手掌柜时心里很慌？
+程序挂了还以为它在发呆？或者担心把服务器内存直接撑爆死机？
+
+不用折磨自己了，装上 `openclaw-supervisor`，让你彻底体验闭眼放养执行流的快乐！✨
+
+### 🔥 核心暴脾气能力
+✅ **全天候“监工”与起死回生：**  
+在最新版中，你可以在任务注册时向监工出示你 Agent 的进程凭证。它一旦在巡视中发现你的执行流不小心崩溃消失了，它会利用自带的 `Auto-Restart` 强制火力在死线之内一秒光速拉起、原地复活，绝不妥协！让你的 Agent 号称 24h 永不掉线！
+
+✅ **透明可视化的体检控：**  
+告别一切黑盒盲猜瞎翻 Error 日志的日子。只要将进程 PID 输入监工网络内，在全局动态节奏监控探测中，它会实时为你播报目标任务在内存中的占用空间容量以及真实的底层 CPU 算力！你 Agent 当前到底是不是老牛推破车，全看这透明图表！
+
+✅ **死命读秒，绝不摸鱼：**  
+死线临近、进度拖沓时启动倒计时报警，当预估算力达不到要求无法交卷出图时高频压迫。
+
+✅ **总览高管数据大屏：**  
+周期性统计运行池的盘点汇编（生存 / 成功 / 牺牲 / 挽救量）。
 
 ---
 
-## 🛠️ 安装与使用指南
-
-将该项目 `git clone` 拉取到您的本地环境中。这是一个纯 Python3 驱动的高内聚脚本，除了原生的官方标准库之外，**绝对没有引入过任何外部多余或者需要 `pip` 安装的复杂依赖**。开箱直接运行即可！
-
-### 1. 启动一个受监督的监控任务
-假设我们需要让 OpenClaw 生成某张特定的效果图，且必须在 `45 分钟` 内完成。我们可以预先埋点：
+## 🛠️ 安装
 
 ```bash
-python supervisor.py start --task-id "G-Design-101" --deadline-min 45 --expect-file "/app/outputs/final_render.png"
+git clone https://github.com/hynize/openclaw-supervisor.git
+cd openclaw-supervisor
 ```
-（你可以传入多个 `--expect-file`，将会必须满足全部被修改才判定为完美胜利。）
+无需 `pip install` 的纯内置标准库。
 
-### 2. 即时人工抽检查询
-查阅刚才创建的 `G-Design-101` 当前的状态变化：
+## 🚀 实弹演练教程
+
+### 场景 1：给你的业务套上死亡复生与资源护盾
+
+当我们利用后台启动了一个运行指令 `python agent.py --input "生成效果图"` 并且得到了他在系统里的进程标号 `6666`。你要督促他在 `45分钟` 内完成并拉起保护，你可以用如下方法向我们注册它：
+
 ```bash
-python supervisor.py check --task-id "G-Design-101"
+python supervisor.py start \
+  --task-id "Super-Render-101" \
+  --deadline-min 45 \
+  --expect-file "/app/result/rendered.png" \
+  --pid 6666 \
+  --command "python agent.py --input '生成效果图'" \
+  --auto-restart
 ```
-此命令将输出美观易懂的 JSON 元数据核验结果。
 
-### 3. 打开智能管家后置视界 (推荐)
-直接开启 `watch` 智能看门狗模式。它负责成为那个拿着秒表帮您全局统计的监工。
+### 场景 2：让监工亲自上岗，守护运行！
 
-如果您觉得每 `300` 秒太慢了，您可以在启动时进行微调：
+启动你的防线智能探测仪！它会自发进入全自动守护，进行资源和奔溃侦测。如果它发现刚才由于报错或者系统挤压 `6666` 被杀死，它会立刻接管 `--command` 进行秒速起死回生指令注射！
+
 ```bash
-python supervisor.py watch --check-interval 15 --report-interval 60
+python supervisor.py watch --check-interval 5 --report-interval 120
 ```
-- `--check-interval 15`: 代表它每 `15` 秒，就会将手头的全部 PENDING 任务刷一遍（**如果某个任务距离死线剩余不到1分钟，监工会自动高频拉响红色警报为您催办督促进程！**）。
-- `--report-interval 60`: 代表每隔 `60` 秒整点，它就会梳理出一份全局表格，将总览当前所有未完成数、胜利数、超时数统统作为报告打印出来。
 
-如果你希望能将其作为系统的服务常驻，可以使用 `nohup`：
+*（建议用 `nohup xxx &` 投放到后台常驻保护）。*
+
+### 场景 3：常规的单发状态核验
+
 ```bash
-nohup python supervisor.py watch > /var/log/openclaw_supervisor.log 2>&1 &
+python supervisor.py check --task-id "Super-Render-101"
 ```
+
+## 面向对象
+如果你是：追求自动化任务不断连跑量闭环的高阶玩家、受够了脚本经常由于偶发 OOM 退出的极客开发者，这就是你补齐架构体验的最后一块完美拼图。
