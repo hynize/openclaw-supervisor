@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-OpenClaw Supervisor (大波威力加强版) 
-- 任务执行监控、资源探头与防线崩溃自起守护。
+OpenClaw Supervisor
+- Task monitoring, resource tracking, and process auto-restart daemon.
 
-功能:
-1. 通过 start 启动监听任务，可捕获 PID，甚至可配置崩溃自动被守护进程秒级拉起。
-2. 通过 check 单次检测当前任务实体生成情况。
-3. 通过 watch 作为常驻守护进程，执行检查督促、崩溃感知、自动重启、性能监控 (CPU/内存) 指标播报。
+Features:
+1. Start and monitor tasks with PID tracking and auto-restart capabilities.
+2. Single-shot artifact check via `check` command.
+3. Continuous monitoring (`watch`) for process liveness, resource usage (CPU/Memory), and deadline enforcement.
 """
 import argparse
 import json
@@ -252,10 +252,10 @@ def cmd_watch(args):
     report_rhythm = args.report_interval
     progress_rhythm = args.progress_interval
     
-    print(f"🚀 OpenClaw Supervisor (大波威力加强版) 进入巡航守护模式 ...")
-    print(f"📊 [全局探测引擎]: 每 {check_rhythm} 秒检查进程异常崩溃、资源波峰并执行起死回生拉起")
-    print(f"📈 [极客看板汇报]: 每 {report_rhythm} 秒汇总打印一次高视角统筹报表")
-    print(f"⏱️ [进度定时汇报]: 每 {progress_rhythm} 秒 (默认30分钟) 播报一次进度并留档")
+    print(f"🚀 OpenClaw Supervisor entered monitoring mode ...")
+    print(f"📊 [Global Engine]: Checking for process crashes and resource spikes every {check_rhythm}s")
+    print(f"📈 [Status Dashboard]: Summary report every {report_rhythm}s")
+    print(f"⏱️ [Progress Updates]: Periodic progress logging every {progress_rhythm}s")
     print("-" * 60)
     
     last_report_time = time.time()
@@ -307,12 +307,12 @@ def cmd_watch(args):
                     total_restarts += data.get('restarts_count', 0)
                         
                 print("\n" + "="*50)
-                print(f"📋 【OpenClaw 阶段性状态防线盘点】 | {format_time(current_dt)}")
-                print(f" > 正在持续等待的健康存活任务 : {all_status['PENDING']}")
-                print(f" > 历史圆满完成的胜利闭环     : {all_status['SUCCESS']}")
-                print(f" > 超时失败并缺失产物任务数   : {all_status['TIMEOUT_NO_ARTIFACT']}")
-                print(f" > 在执行中途遭遇无法挽回宕机 : {all_status['CRASHED_FAILED']}")
-                print(f"✨ 守护引擎共计执行秒级拉起操作 : {total_restarts} 人次挽救执行期")
+                print(f"📋 [OpenClaw Periodic Status Summary] | {format_time(current_dt)}")
+                print(f" > Pending/Running Tasks   : {all_status['PENDING']}")
+                print(f" > Successful Tasks        : {all_status['SUCCESS']}")
+                print(f" > Timeout (No Artifact)   : {all_status['TIMEOUT_NO_ARTIFACT']}")
+                print(f" > Crashed/Failed Tasks    : {all_status['CRASHED_FAILED']}")
+                print(f"✨ Total Auto-Restarts performed : {total_restarts}")
                 print("="*50 + "\n")
                 
                 last_report_time = now_ts
@@ -335,7 +335,7 @@ def cmd_watch(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenClaw Task Supervisor - 大波威力加强版")
+    parser = argparse.ArgumentParser(description="OpenClaw Task Supervisor")
     sub = parser.add_subparsers(dest='cmd', required=True)
 
     p_start = sub.add_parser('start', help="新建并启动一个目标文件的计时侦测任务")

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+runtime/project_status.json
+runtime/execution_heartbeat/*.json
+runtime/execution_heartbeat/*.jsonl
+runtime/execution_heartbeat/**/*.json
+runtime/execution_heartbeat/**/*.jsonl
+runtime/execution_heartbeat/outbox/
+.env
+*.log

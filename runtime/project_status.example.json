@@ -1,0 +1,17 @@
+{
+  "current_focus": "demo-task",
+  "current_milestone_deadline": "2026-04-01T20:00:00+08:00",
+  "latest_artifacts": [
+    "artifact/result.json",
+    "output/report.md"
+  ],
+  "completed_items": [
+    "feature-1 completed",
+    "feature-2 completed"
+  ],
+  "incomplete_items": [
+    "task-a pending",
+    "task-b pending"
+  ],
+  "last_updated": "2026-03-21T10:00:00.000000+00:00"
+}
