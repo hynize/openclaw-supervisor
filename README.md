@@ -67,7 +67,7 @@ python scripts/execution_heartbeat.py start \
 
 # 2. 更新项目实时状态（用于自动汇报内容展示）
 python scripts/update_project_status.py \
-  --set-focus "整改主链规范" \
+  --set-focus "项目进度更新" \
   --add-incomplete "完成 A 模块"
 ```
 

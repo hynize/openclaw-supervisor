@@ -6,7 +6,7 @@
 ## 修改内容清单
 
 ### 1. 移除了全量 Python 脚本中的硬编码 Linux 绝对路径
-之前的代码中所有的 `runtime/execution_heartbeat` 等目录都硬编码指到了 `/root/.openclaw/workspace/` 下，导致离开容器无法本地执行。
+之前的代码中所有的 `runtime/execution_heartbeat` 等目录都硬编码指到了内部固定的绝对路径下，导致离开容器无法本地执行。
 
 **涉及文件**：
 *   `execution_heartbeat.py`

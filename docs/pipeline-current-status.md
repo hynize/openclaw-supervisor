@@ -11,13 +11,9 @@
 - `generation_action = generated_now`
 - `delivery_action = formal_sent`
 
-## Current phase-1 limitations
-- `pipeline/build_section_ready.py` is still a minimal build entry based on stable section-ready input, not a full lower-layer rebuild from raw market pipeline
-- Delivery currently assumes the target report PDF path is already available and sendable
-
 ## Review focus
-1. Whether `v8.fix` remains the right baseline pointer
-2. Whether `v9` remains the right working section-ready input
+1. Whether the current version remains the right baseline pointer
+2. Whether the working section-ready input remains valid
 3. Whether build_section_ready should become the canonical generation entry
 4. Whether DeliveryStep should later own full render + send end-to-end
 
