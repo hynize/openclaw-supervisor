@@ -58,7 +58,7 @@ def process_ready():
         cmd = [
             'openclaw', 'message', 'send',
             '--channel', 'telegram',
-            '--target', '1797428566',
+            '--target', 'REPLACE_WITH_YOUR_TELEGRAM_ID',
             '--message', message,
             '--silent', '--json'
         ]
